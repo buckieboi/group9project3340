@@ -1,5 +1,6 @@
 class TransactionsController < ApplicationController
   # Removed :show from before_action to avoid missing callback issues
+  # another comment
   before_action :set_transaction, only: [:edit, :update, :destroy]
 
   def index
