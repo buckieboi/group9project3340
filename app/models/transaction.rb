@@ -1,16 +1,26 @@
 class Transaction < ApplicationRecord
-  validates :amount, presence: true, numericality: true
-  validates :description, presence: true
-  validates :transaction_date, presence: true
-  validates :transaction_type, inclusion: { in: ["income", "expense", "withdrawal", "saving"] }
-  validates :category, presence: true, if: -> { transaction_type == "expense" }
+  belongs_to :user
 
-  scope :income, -> { where(transaction_type: "income") }
-  scope :expenses, -> { where(transaction_type: "expense") }
-  scope :withdrawals, -> { where(transaction_type: "withdrawal") }
-  scope :savings, -> { where(transaction_type: "saving") }
+  validates :amount, numericality: { greater_than: 0 }
+  validates :transaction_type, inclusion: { in: %w(withdrawal deposit) }
 
-  def self.total_balance
-    income.sum(:amount) - expenses.sum(:amount) - withdrawals.sum(:amount) - savings.sum(:amount)
+  validate :sufficient_funds_for_withdrawal, if: -> { transaction_type == 'withdrawal' }
+
+  after_create :update_user_balance
+
+  private
+
+  def sufficient_funds_for_withdrawal
+    if user && amount > user.balance
+      errors.add(:amount, "exceeds available balance")
+    end
+  end
+
+  def update_user_balance
+    if transaction_type == 'withdrawal'
+      user.update(balance: user.balance - amount)
+    elsif transaction_type == 'deposit'
+      user.update(balance: user.balance + amount)
+    end
   end
 end

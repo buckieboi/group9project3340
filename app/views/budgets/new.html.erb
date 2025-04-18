@@ -1,0 +1,11 @@
+<h1>Create a New Budget</h1>
+
+<%= form_with(model: @budget, local: true) do |f| %>
+  <div>
+    <%= f.label :name, "Budget Name" %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div>
+    <%= f.submit "Create Budget" %>
+  </div>
+<% end %>

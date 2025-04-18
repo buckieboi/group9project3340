@@ -1,0 +1,16 @@
+<h1>Your Budgets</h1>
+
+<% if @budgets.present? %>
+  <ul>
+    <% @budgets.each do |budget| %>
+      <li>
+        <strong><%= budget.name %></strong>
+        <!-- Add links to view/edit if needed -->
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No budgets found.</p>
+<% end %>
+
+<%= link_to "Create New Budget", new_budget_path %>
